@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pardhu Traders - Accounting Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pardhu Traders - Accounting Management System</h1>
+            <p class="subtitle">Daybook | Ledger | Trial Balance | Profit & Loss</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="daybook">Daybook</button>
+            <button class="tab-btn" data-tab="accounts">Chart of Accounts</button>
+            <button class="tab-btn" data-tab="ledger">Ledger</button>
+            <button class="tab-btn" data-tab="trial-balance">Trial Balance</button>
+            <button class="tab-btn" data-tab="profit-loss">Profit & Loss</button>
+            <button class="tab-btn" data-tab="import">Import Data</button>
+        </nav>
+
+        <!-- Daybook Section -->
+        <div id="daybook" class="tab-content active">
+            <h2>Daybook (Journal Entries)</h2>
+
+            <div class="form-card">
+                <h3>Add New Entry</h3>
+                <form id="journal-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date:</label>
+                            <input type="date" id="entry-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Account Code:</label>
+                            <input type="text" id="entry-account" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Particulars:</label>
+                        <input type="text" id="entry-particulars" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Debit (₹):</label>
+                            <input type="number" id="entry-debit" step="0.01" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Credit (₹):</label>
+                            <input type="number" id="entry-credit" step="0.01" min="0" value="0">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Entry</button>
+                </form>
+            </div>
+
+            <div class="filters">
+                <h3>Filter Entries</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>From Date:</label>
+                        <input type="date" id="filter-start-date">
+                    </div>
+                    <div class="form-group">
+                        <label>To Date:</label>
+                        <input type="date" id="filter-end-date">
+                    </div>
+                    <button class="btn btn-secondary" onclick="loadJournalEntries()">Apply Filter</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="journal-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Account Code</th>
+                            <th>Particulars</th>
+                            <th>Debit (₹)</th>
+                            <th>Credit (₹)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="journal-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Chart of Accounts Section -->
+        <div id="accounts" class="tab-content">
+            <h2>Chart of Accounts</h2>
+
+            <div class="form-card">
+                <h3>Add New Account</h3>
+                <form id="account-form">
+                    <div class="form-group">
+                        <label>Account Code:</label>
+                        <input type="text" id="account-code" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Name:</label>
+                        <input type="text" id="account-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Type:</label>
+                        <select id="account-type" required>
+                            <option value="">Select Type</option>
+                            <option value="Asset">Asset</option>
+                            <option value="Liability">Liability</option>
+                            <option value="Equity">Equity</option>
+                            <option value="Income">Income</option>
+                            <option value="Revenue">Revenue</option>
+                            <option value="Expense">Expense</option>
+                            <option value="Cost">Cost</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Account</button>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <table id="accounts-table">
+                    <thead>
+                        <tr>
+                            <th>Account Code</th>
+                            <th>Account Name</th>
+                            <th>Account Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accounts-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Ledger Section -->
+        <div id="ledger" class="tab-content">
+            <h2>Ledger</h2>
+
+            <div class="filters">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Account Code:</label>
+                        <input type="text" id="ledger-account" required>
+                    </div>
+                    <div class="form-group">
+                        <label>From Date:</label>
+                        <input type="date" id="ledger-start-date">
+                    </div>
+                    <div class="form-group">
+                        <label>To Date:</label>
+                        <input type="date" id="ledger-end-date">
+                    </div>
+                    <button class="btn btn-primary" onclick="loadLedger()">Load Ledger</button>
+                </div>
+            </div>
+
+            <div id="ledger-result" class="result-container">
+                <div class="table-container">
+                    <table id="ledger-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Particulars</th>
+                                <th>Debit (₹)</th>
+                                <th>Credit (₹)</th>
+                                <th>Balance (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trial Balance Section -->
+        <div id="trial-balance" class="tab-content">
+            <h2>Trial Balance</h2>
+
+            <div class="filters">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>As on Date:</label>
+                        <input type="date" id="tb-date" value="">
+                    </div>
+                    <button class="btn btn-primary" onclick="loadTrialBalance()">Generate Trial Balance</button>
+                </div>
+            </div>
+
+            <div id="trial-balance-result" class="result-container">
+                <div class="table-container">
+                    <table id="trial-balance-table">
+                        <thead>
+                            <tr>
+                                <th>Account Code</th>
+                                <th>Account Name</th>
+                                <th>Debit (₹)</th>
+                                <th>Credit (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trial-balance-tbody"></tbody>
+                        <tfoot id="trial-balance-tfoot"></tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profit & Loss Section -->
+        <div id="profit-loss" class="tab-content">
+            <h2>Profit & Loss Account</h2>
+
+            <div class="filters">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>From Date:</label>
+                        <input type="date" id="pl-start-date">
+                    </div>
+                    <div class="form-group">
+                        <label>To Date:</label>
+                        <input type="date" id="pl-end-date">
+                    </div>
+                    <button class="btn btn-primary" onclick="loadProfitLoss()">Generate P&L Statement</button>
+                </div>
+            </div>
+
+            <div id="profit-loss-result" class="result-container">
+                <div class="pl-container">
+                    <div class="pl-section">
+                        <h3>Expenses</h3>
+                        <table id="expenses-table">
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Amount (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenses-tbody"></tbody>
+                            <tfoot id="expenses-tfoot"></tfoot>
+                        </table>
+                    </div>
+                    <div class="pl-section">
+                        <h3>Income</h3>
+                        <table id="income-table">
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Amount (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="income-tbody"></tbody>
+                            <tfoot id="income-tfoot"></tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="net-profit" id="net-profit-display"></div>
+            </div>
+        </div>
+
+        <!-- Import Data Section -->
+        <div id="import" class="tab-content">
+            <h2>Import Data from Excel</h2>
+
+            <div class="form-card">
+                <h3>Upload Excel File</h3>
+                <p>Upload your Excel file (compatible with Final 2018-2025 format)</p>
+                <form id="import-form">
+                    <div class="form-group">
+                        <input type="file" id="excel-file" accept=".xlsx,.xls" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Import Data</button>
+                </form>
+                <div id="import-result" class="result-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
